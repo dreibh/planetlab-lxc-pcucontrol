@@ -47,6 +47,7 @@ cd ..
 
 %install
 rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/%{python_sitearch}/pcucontrol/
 rsync -a --exclude .svn  ./pcucontrol/    $RPM_BUILD_ROOT/%{python_sitearch}/pcucontrol/
 
 %clean
