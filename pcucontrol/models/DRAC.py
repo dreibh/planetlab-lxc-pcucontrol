@@ -91,9 +91,6 @@ def runcmd(command, args, username, password, timeout = None):
 			p = popen2.Popen4(command)
 
 			# read all output data
-			p.tochild.write("%s\n" % username)
-			p.tochild.write("%s\n" % password)
-			p.tochild.close()
 			data = p.fromchild.read()
 
 			while True:
@@ -148,10 +145,10 @@ def racadm_reboot(host, username, password, port, dryrun):
 		cmd = "/usr/sbin/racadm"
 		os.stat(cmd)
 		if not dryrun:
-			output = runcmd(cmd, ["-r %s -i serveraction powercycle" % ip],
+			output = runcmd(cmd, ["-r %s -u %s -p %s serveraction powercycle" % (ip, username, password)],
 				username, password)
 		else:
-			output = runcmd(cmd, ["-r %s -i getsysinfo" % ip],
+			output = runcmd(cmd, ["-r %s -u %s -p %s getsysinfo" % (ip, username, password)],
 				username, password)
 
 		print "RUNCMD: %s" % output
