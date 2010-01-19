@@ -43,7 +43,7 @@ if os.name=='posix':
                    # if sufficient.
     sshpopen2=ptyext.popen2
     CLOSE_STR='~.'
-    tp=os.popen('/usr/bin/which ssh')
+    tp=os.popen('bash -c "type -p ssh"')
     SSH_PATH=tp.read().strip()
     try:
         tp.close()
