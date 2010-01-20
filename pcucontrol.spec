@@ -25,6 +25,7 @@ Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
 
 Requires: python
+Obsoletes: monitor-pcucontrol
 
 Summary: pcu controls for monitor and plcapi
 Group: Applications/System
