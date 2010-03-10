@@ -145,10 +145,10 @@ def racadm_reboot(host, username, password, port, dryrun):
 		cmd = "/usr/sbin/racadm"
 		os.stat(cmd)
 		if not dryrun:
-			output = runcmd(cmd, ["-r %s -u %s -p %s serveraction powercycle" % (ip, username, password)],
+			output = runcmd(cmd, ["-r %s -u %s -p '%s' serveraction powercycle" % (ip, username, password)],
 				username, password)
 		else:
-			output = runcmd(cmd, ["-r %s -u %s -p %s getsysinfo" % (ip, username, password)],
+			output = runcmd(cmd, ["-r %s -u %s -p '%s' getsysinfo" % (ip, username, password)],
 				username, password)
 
 		print "RUNCMD: %s" % output
