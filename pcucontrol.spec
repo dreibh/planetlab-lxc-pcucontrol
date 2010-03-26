@@ -25,6 +25,7 @@ Distribution: PlanetLab %{plrelease}
 URL: %(echo %{url} | cut -d ' ' -f 2)
 
 Requires: python
+Requires: OpenIPMI-tools
 Obsoletes: monitor-pcucontrol
 
 Summary: pcu controls for monitor and plcapi
