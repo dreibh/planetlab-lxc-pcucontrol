@@ -6,7 +6,7 @@
 
 %define name pcucontrol
 %define version 1.0
-%define taglevel 1
+%define taglevel 2
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 02 2010 Thierry Parmentelat <thierry.parmentelat@sophia.inria.fr> - pcucontrol-1.0-2
+- tweak for DRAC - protect against spaces in password
+
 * Thu Jan 21 2010 Talip Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-1
 - * pcucontrol obsoletes monitor-pcucontrol
 - * use bash built-in instead of which to locate ssh
