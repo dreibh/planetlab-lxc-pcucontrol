@@ -106,6 +106,7 @@ class Transport:
 	HTTP   = "http"
 	HTTPS  = "https"
 	IPAL   = "ipal"
+        IPMI   = "ipmi"
 	DRAC   = "drac"
 	AMT    = "amt"
 
@@ -118,6 +119,7 @@ class Transport:
 			443 : HTTPS,
 			80 :  HTTP,
 			9100 : IPAL,
+                        623 : IPMI,
 			16992 : AMT,
 		}
 
