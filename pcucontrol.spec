@@ -6,7 +6,7 @@
 
 %define name pcucontrol
 %define version 1.0
-%define taglevel 3
+%define taglevel 4
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 12 2010 Talip Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-4
+- * add ipmi trasport type.
+
 * Mon May 03 2010 Talip Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-3
 - remove unused import (that causes deprecated warnings in plcsh)
 
