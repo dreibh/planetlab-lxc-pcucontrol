@@ -6,7 +6,7 @@
 
 %define name pcucontrol
 %define version 1.0
-%define taglevel 5
+%define taglevel 6
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -61,6 +61,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jun 18 2010 s s <soltesz@cs.princeton.edu> - pcucontrol-1.0-6
+- adding a testrun parameter to the api
+
 * Fri May 21 2010 Talip Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-5
 - ePowerSwitchOld fix
 
