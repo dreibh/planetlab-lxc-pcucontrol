@@ -381,7 +381,7 @@ def model_to_object(modelname):
 		print "UNKNOWN model %s"%modelname
 		return Unknown
 
-def reboot_api(node, pcu):
+def reboot_api(node, pcu, testrun=False):
 	rb_ret = ""
 
 	try:
@@ -393,7 +393,7 @@ def reboot_api(node, pcu):
 			i = pcu['node_ids'].index(node['node_id'])
 			p = pcu['ports'][i]
 			# reboot
-			rb_ret = instance.reboot(p, False)
+			rb_ret = instance.reboot(p, testrun)
 		else:
 			rb_ret =  "No modelname in PCU record."
 		# TODO: how to handle the weird, georgetown pcus, the drac faults, and ilo faults
