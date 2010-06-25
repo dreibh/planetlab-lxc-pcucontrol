@@ -12,6 +12,7 @@ import urllib
 import array, struct
 import base64
 from subprocess import PIPE, Popen
+import subprocess
 import pcucontrol.transports.ssh.pxssh as pxssh
 import pcucontrol.transports.ssh.pexpect as pexpect
 import socket

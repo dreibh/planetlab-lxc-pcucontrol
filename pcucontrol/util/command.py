@@ -126,6 +126,7 @@ class CMD:
 		f_out.close()
 		f_in.close()
 		f_err.close()
+		s.poll()
 		s.kill(signal.SIGKILL)
 
 		return (o_value, e_value)
