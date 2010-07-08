@@ -44,6 +44,7 @@ supported models.
 # NOTE: TMPDIR is needed here b/c the tmpfs of the build vserver is too small.
 cd pcucontrol/models/intelamt
 export TMPDIR=$PWD/tmp
+mkdir -p $TMPDIR
 make
 cd ..
 
