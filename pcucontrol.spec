@@ -6,7 +6,7 @@
 
 %define name pcucontrol
 %define version 1.0
-%define taglevel 8
+%define taglevel 9
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -62,6 +62,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Dec 03 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-9
+- fix build for f14
+
 * Thu Jul 08 2010 Baris Metin <Talip-Baris.Metin@sophia.inria.fr> - pcucontrol-1.0-8
 - fix build issue
 
