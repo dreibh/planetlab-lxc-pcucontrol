@@ -19,7 +19,7 @@ SRC_PATH = ./
 INCLUDE = -I$(GSOAP_PATH)  -I$(INC_PATH)  -I$(GSOAP_CODE)
 SRCS = $(GSOAP_CODE)/soapClient.cpp $(GSOAP_CODE)/soapC.cpp $(GSOAP_PATH)/stdsoap2.cpp $(GSOAP_PATH)/httpDigest.cpp $(GSOAP_PATH)/digcalc.cpp RemoteControlSample.cpp 
 OBJS = $(SRCS:.cpp=.o) Utils.o 
-LIBS = -lssl 
+LIBS = -lssl -lcrypto
 APPNAME = remoteControl
 WSDL2H = $(GSOAP_PATH)/wsdl2h
 SOAPCPP = $(GSOAP_PATH)/soapcpp2
