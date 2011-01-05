@@ -1,9 +1,3 @@
-#
-# $Id$
-# 
-
-%define url $URL: svn+ssh://svn.planet-lab.org/svn/pcucontrol/trunk/pcucontrol.spec $
-
 %define name pcucontrol
 %define version 1.0
 %define taglevel 9
@@ -22,7 +16,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Vendor: PlanetLab
 Packager: PlanetLab Central <support@planet-lab.org>
 Distribution: PlanetLab %{plrelease}
-URL: %(echo %{url} | cut -d ' ' -f 2)
+URL: %{SCMURL}
 
 Requires: python
 Requires: OpenIPMI-tools
