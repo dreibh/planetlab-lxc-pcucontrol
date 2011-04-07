@@ -120,7 +120,7 @@ class Transport:
 			443 : HTTPS,
 			80 :  HTTP,
 			9100 : IPAL,
-                        623 : IPMI,
+			 623 : IPMI,
 			16992 : AMT,
 		}
 
@@ -219,7 +219,7 @@ class Transport:
 			output = self.transport.read_until(expected, self.TELNET_TIMEOUT)
 			if output.find(expected) == -1:
 				print "OUTPUT: --%s--" % output
-				raise ErrorClass, "'%s' not found" % expected
+				raise ErrorClass, "'%s' not found: Got: %s" % (expected, output)
 			else:
 				self.transport.write(buffer + "\r\n")
 		else:

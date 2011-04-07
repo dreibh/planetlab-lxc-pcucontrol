@@ -63,7 +63,7 @@ class HPiLO(PCUControl):
                     self.username, self.password)
         cmd_out, cmd_err = locfg.run_noexcept(cmd)
 
-        cmd = "grep 'MESSAGE' | grep -v 'No error'"
+        cmd = "grep 'MESSAGE' | grep -v 'No error' | grep -v 'Server being reset.'"
         p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                             stderr=subprocess.STDOUT, close_fds=True)
         (grep_in, grep_out ) = (p.stdin, p.stdout)
