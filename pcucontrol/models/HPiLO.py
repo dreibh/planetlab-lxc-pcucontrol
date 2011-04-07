@@ -48,6 +48,21 @@ class HPiLO(PCUControl):
         if locfg.s.returncode != 0:
             return cmd_out.strip() + cmd_err.strip()
 
+        if dryrun: 
+            return 0
+
+        locfg = command.CMD()
+        cmd = cmd_str + "locfg.pl -s %s -f %s -u %s -p '%s'" % (
+                    self.host, cmd_str+"iloxml/PowerOn_Server.xml", 
+                    self.username, self.password)
+        cmd_out, cmd_err = locfg.run_noexcept(cmd)
+
+        locfg = command.CMD()
+        cmd = cmd_str + "locfg.pl -s %s -f %s -u %s -p '%s'" % (
+                    self.host, cmd_str+"iloxml/Reset_Server.xml", 
+                    self.username, self.password)
+        cmd_out, cmd_err = locfg.run_noexcept(cmd)
+
         cmd = "grep 'MESSAGE' | grep -v 'No error'"
         p = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, 
                             stderr=subprocess.STDOUT, close_fds=True)
