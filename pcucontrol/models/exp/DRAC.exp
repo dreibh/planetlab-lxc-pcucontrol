@@ -1,0 +1,104 @@
+#!/usr/bin/expect
+
+set timeout 20
+set method [lindex $argv 0]
+set host [lindex $argv 1]
+set user [lindex $argv 2]
+set password [lindex $argv 3]
+set dryrun [lindex $argv 4]
+set model [lindex $argv 5]
+
+log_user 0
+if { "$dryrun" == "True" } {
+    set reset_msg "Test: No error"
+} else {
+    set reset_msg "Reset: No error"
+}
+
+
+if { "$method" == "ssh" } {
+    send_user "spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host\n"
+    set cont 0
+    for { set retry 0 } { $retry < 2 } { incr retry 1 } {
+
+        # NOTE: For unknown reason, some DRAC modules work only with
+        #       stderr redirected to stdout, others only work without it.
+        if { $retry == 0 } {
+            spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host 2>&1
+        } else {
+            spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host 
+        }
+
+        expect {
+            "Are you sure you want to continue connecting (yes/no)? " { send "yes\n" ; exp_continue }
+            "password: " { send "$password\n" ; exp_continue }
+            "Permission denied" { send_user "DRAC ssh: username/password: $expect_out(0,string)"; exit }
+            "Could not resolve hostname" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
+            -re "Received disconnect.*" { send_user "DRAC ssh: $expect_out(0,string)"; exit}
+            -re "\\$|/.*>|\[$user\]#" { send "\r"; } 
+            eof { set cont 1 }
+        }
+        if { $cont == 0 } { break; }
+
+    }
+
+    if { "$dryrun" == "True" } {
+        expect {
+            -re "\\$|/.*>" { send "racadm getsysinfo\r"; } 
+            -re "\[$user\]#" { send "getsysinfo\r" }
+        }
+    } else {
+        expect {
+            -re "\\$|/.*>" { send "racadm serveraction powercycle\r"; } 
+            -re "\[$user\]#" { send "serveraction powercycle\r" }
+        }
+    }
+    expect -re "\\$|/.*>|\[$user\]#" { send "exit\r"; } 
+
+    expect eof { send_user "$reset_msg\n" }
+
+} else { 
+    if { [string match "*racadm*" $method] } {
+        if { "$dryrun" == "True" } {
+            set rac_cmd "getsysinfo"
+        } else {
+            set rac_cmd "serveraction powercycle"
+        }
+        send_user "/opt/dell/srvadmin/bin/$method -r $host -u $user -p '$password' $rac_cmd\n";
+        set cont 0
+        for { set retry 0 } { $retry < 2 } { incr retry 1 } {
+
+            # NOTE: For unknown reason, placing the pasword 
+            #       on the cmdline causes racadm to fail.
+            # NOTE: For unknown reason, some DRAC modules work only with
+            #       stderr redirected to stdout, others only work without it.
+            if { $retry == 0 } {
+                set x [ spawn /opt/dell/srvadmin/bin/$method -i -r $host $rac_cmd 2>&1 ]
+            } else {
+                set x [ spawn /opt/dell/srvadmin/bin/$method -i -r $host $rac_cmd  ]
+            }
+
+            expect {
+                -re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
+                -re "UserName:|username:" { send "$user\r" ; exp_continue };
+                -re "Password:|password:" { send "$password\r" };
+            }
+
+            expect {
+                -re "Authentication failed.*" { send_user "DRAC: $expect_out(0,string)"; exit }
+                -re "This.*not support remote RACADM" { send_user "DRAC: $expect_out(0,string)" ; exit }
+                -re "ERROR: The syntax of the command specified is not correct." { set cont 1 }
+                -re "RAC Information:" { sleep .1; }
+                #-re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
+            }
+            if { $cont == 0 } { break; }
+        }
+        # If one of these are present, then the status information has been returned.
+        # otherwise an expect error will be thrown, signaling the caller.
+        expect {
+            -re "Power Status.*" { sleep .1; } 
+            -re "RAC Firmware.*" { sleep .1; }
+        } 
+        expect eof { send_user "$reset_msg\n" }
+    }
+}

@@ -5,6 +5,7 @@ from APCControl import *
 from IntelAMT import *
 from DRAC import *
 from HPiLO import *
+from HPiLOProxy import *
 from BayTech import *
 from WTIIPS4 import *
 from ePowerSwitch import *

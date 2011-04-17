@@ -1,0 +1,62 @@
+#!/usr/bin/expect
+
+set timeout 60
+set method [lindex $argv 0]
+set host [lindex $argv 1]
+set user [lindex $argv 2]
+set password [lindex $argv 3]
+set dryrun [lindex $argv 4]
+set model [lindex $argv 5]
+
+log_user 0
+
+if { "$method" == "https" } {
+    if { "$dryrun" == "True" } {
+        set file $path/iloxml/Get_Network.xml
+    } else {
+        #set file $path/iloxml/Reset_Server.xml
+        set file $path/iloxml/Get_Network.xml
+    }
+    spawn "$path/locfg.pl" -s $host -u $user -p '$password' -f $file
+} elseif { "$method" == "ssh" } {
+    if { "$dryrun" == "True" } {
+        set reset_cmd "POWER\r"
+        set reset_msg "Test: No error"
+    } else {
+        #set reset_cmd "reset\r"
+        set reset_cmd "POWER\r"
+        set reset_msg "Reset: No error"
+    }
+    spawn ssh $user@$host
+} elseif { "$method" == "proxy" } {
+    set url "http://www.cs.princeton.edu/~soltesz/pcuProxy.php"
+    set query "username=$user&password=$password&hostname=$host&model=$model&dryrun=$dryrun"
+    spawn curl -s "$url?$query"
+}
+
+if { "$method" == "proxy" || "$method" == "https" }  {
+    # Check for any one of the following patterns, then print it and stop.
+    expect {
+        "MESSAGE='Server being reset.'" { send_user "Reset: No error" }
+        "MESSAGE='Host power is already ON.'" { send_user "$expect_out(0,string)"}
+        "MESSAGE='Host power is already OFF.'" { send_user "$expect_out(0,string)"}
+        "MESSAGE='Login credentials rejected.'" { send_user "$expect_out(0,string)"}
+        "<GET_NETWORK_SETTINGS>" { send_user "Test: No error"}
+        -re "ERROR:.*" { send_user "$expect_out(0,string)" }
+        eof { send_user "Reached EOF without status report: $expect_out(buffer)" }
+    }
+} elseif { "$method" == "ssh" } {
+
+    expect {
+        "Are you sure you want to continue connecting (yes/no)? " { send "yes\n" ; exp_continue }
+        "password: " { send "$password\n" ; exp_continue }
+        "Permission denied" { send_user "HPiLO username/password: $expect_out(0,string)"; exit }
+        "Could not resolve hostname" { send_user "HPiLO hostname: $expect_out(0,string)"; exit }
+        "</>hpiLO-> " { send "cd system1\r" }
+    }
+
+    expect "</system1>hpiLO-> " { send $reset_cmd }
+    expect "</system1>hpiLO-> " { send "exit\r" }
+    expect eof { send_user $reset_msg }
+
+}
