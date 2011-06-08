@@ -1,9 +1,14 @@
 <?php 
 
+$DEBUG=FALSE;
 function logit($string){
+    global $DEBUG;
+    if ( $DEBUG )
+    {
 		$f = fopen("output.log", 'a');
 		fwrite($f, $string);
 		fclose($f);
+    }
 }
 
 function run_hp_script($script, $host, $username, $password)
@@ -52,7 +57,7 @@ function run_hp_script($script, $host, $username, $password)
 			echo system("which ipmitool 2>&1");
 		} else 
 		{
-			echo "what do you want me to do with this?";
+			echo "Unrecognized pcu type: $model";
 		}
 
 	} else {

@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set timeout 20
+set timeout 60
 set method [lindex $argv 0]
 set host [lindex $argv 1]
 set user [lindex $argv 2]
@@ -17,16 +17,16 @@ if { "$dryrun" == "True" } {
 
 
 if { "$method" == "ssh" } {
-    send_user "spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host\n"
+    #send_user "spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host\n"
     set cont 0
     for { set retry 0 } { $retry < 2 } { incr retry 1 } {
 
         # NOTE: For unknown reason, some DRAC modules work only with
         #       stderr redirected to stdout, others only work without it.
         if { $retry == 0 } {
-            spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host 2>&1
-        } else {
             spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host 
+        } else {
+            spawn ssh -o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no $user@$host 2>&1
         }
 
         expect {
@@ -34,9 +34,11 @@ if { "$method" == "ssh" } {
             "password: " { send "$password\n" ; exp_continue }
             "Permission denied" { send_user "DRAC ssh: username/password: $expect_out(0,string)"; exit }
             "Could not resolve hostname" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
+            "Connection timed out" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
             -re "Received disconnect.*" { send_user "DRAC ssh: $expect_out(0,string)"; exit}
             -re "\\$|/.*>|\[$user\]#" { send "\r"; } 
-            eof { set cont 1 }
+            timeout { send_user "DRAC ssh: timeout" ; exit; }
+            eof { if { $cont == 1 } { send_user "DRAC ssh failed twice"; exit ; } ; set cont 1 }
         }
         if { $cont == 0 } { break; }
 
@@ -64,7 +66,7 @@ if { "$method" == "ssh" } {
         } else {
             set rac_cmd "serveraction powercycle"
         }
-        send_user "/opt/dell/srvadmin/bin/$method -r $host -u $user -p '$password' $rac_cmd\n";
+        #send_user "/opt/dell/srvadmin/bin/$method -r $host -u $user -p '$password' $rac_cmd\n";
         set cont 0
         for { set retry 0 } { $retry < 2 } { incr retry 1 } {
 
@@ -73,22 +75,27 @@ if { "$method" == "ssh" } {
             # NOTE: For unknown reason, some DRAC modules work only with
             #       stderr redirected to stdout, others only work without it.
             if { $retry == 0 } {
-                set x [ spawn /opt/dell/srvadmin/bin/$method -i -r $host $rac_cmd 2>&1 ]
+                set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd 2>&1 ]
             } else {
-                set x [ spawn /opt/dell/srvadmin/bin/$method -i -r $host $rac_cmd  ]
+                set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd  ]
             }
 
             expect {
                 -re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
                 -re "UserName:|username:" { send "$user\r" ; exp_continue };
                 -re "Password:|password:" { send "$password\r" };
+                timeout { send_user "DRAC: timeout" ; exit }
+                eof { send_user "DRAC: early EOF"; exit ; }
             }
 
             expect {
                 -re "Authentication failed.*" { send_user "DRAC: $expect_out(0,string)"; exit }
                 -re "This.*not support remote RACADM" { send_user "DRAC: $expect_out(0,string)" ; exit }
                 -re "ERROR: The syntax of the command specified is not correct." { set cont 1 }
+                -re "INVALID ARGUMENT" { send_user "DRAC: received 'INVALID ARGUMENT'"; exit }
                 -re "RAC Information:" { sleep .1; }
+                timeout { send_user "DRAC: timeout" ; exit }
+                eof { send_user "DRAC: early EOF"; exit ; }
                 #-re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
             }
             if { $cont == 0 } { break; }
@@ -98,6 +105,7 @@ if { "$method" == "ssh" } {
         expect {
             -re "Power Status.*" { sleep .1; } 
             -re "RAC Firmware.*" { sleep .1; }
+            eof { send_user "DRAC: early EOF"; exit ; }
         } 
         expect eof { send_user "$reset_msg\n" }
     }

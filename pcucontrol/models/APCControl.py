@@ -1,4 +1,5 @@
 from pcucontrol.reboot import *
+import subprocess
 
 class APCControl(PCUControl):
 	supported_ports = [22,23,80,443]
@@ -68,7 +69,8 @@ class APCControl(PCUControl):
 		cmd = cmd % ( self.username, self.password, self.host)
 		print "CMD: %s" % cmd
 
-		p = os.popen(cmd)
+		p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
+
 		result = p.read()
 		if len(result.split('\n')) > 2:
 			self.logout()
@@ -132,7 +134,7 @@ class APCControl(PCUControl):
 			raise ExceptionNoTransport("Unsupported transport to get version")
 
 		cmd = cmd % ( self.username, self.password, self.host)
-		p = os.popen(cmd)
+		p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
 		result = p.read()
 		return result.strip()
 
@@ -148,7 +150,7 @@ class APCControl(PCUControl):
 			raise ExceptionNoTransport("Unsupported transport to logout")
 
 		cmd = cmd % ( self.username, self.password, self.host)
-		p = os.popen(cmd)
+		p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
 		print p.read()
 
 class APCControl12p3(APCControl):

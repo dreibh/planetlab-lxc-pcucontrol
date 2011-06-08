@@ -88,9 +88,9 @@ class PCUModel(PCU):
 
         raise Exception("No such Node ID: %d" % node_id)
 
-    def catcherror(self, function, node_port):
+    def catcherror(self, function, node_port, dryrun):
         try:
-            return function(node_port)
+            return function(node_port, dryrun)
         except ExceptionNotFound, err:
             return "Not found: " + str(err)
         except ExceptionPassword, err:
@@ -363,6 +363,7 @@ class BasicPCUControl(PCUModel):
         cmd = cmd_str + "%s %s %s '%s' %s %s "  % (
                     scriptname, self.host, self.username, 
                     self.password, args['dryrun'], args['model'])
+        print cmd
         cmd_out, cmd_err = locfg.run_noexcept(cmd)
         return cmd_out.strip() + cmd_err.strip()
 
@@ -378,7 +379,7 @@ class BasicPCUControl(PCUModel):
 
         print "found function %s in model %s" % (looking_for_fxn, self.model)
         reboot_fxn = getattr(self, looking_for_fxn)
-        ret = self.catcherror(reboot_fxn, node_port)
+        ret = self.catcherror(reboot_fxn, node_port, dryrun)
 
         return ret
 

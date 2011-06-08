@@ -12,7 +12,7 @@ class HPiLO(BasicPCUControl):
         else:
             raise ExceptionNoTransport("Unimplemented Transport for HPiLO %s" % self.type)
 
-    def pcu_run(self, node_port):
+    def pcu_run(self, node_port, dryrun=False):
         r = self.run_https(node_port, dryrun=False)
         if "No error" in r:
             return r
@@ -21,7 +21,7 @@ class HPiLO(BasicPCUControl):
             return r2
         return r + " :: " +r2
 
-    def pcu_test(self, node_port):
+    def pcu_test(self, node_port, dryrun=True):
         r = self.run_https(node_port, dryrun=True)
         if "No error" in r:
             return r
