@@ -36,7 +36,7 @@ if { "$method" == "ssh" } {
             "Could not resolve hostname" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
             "Connection timed out" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
             -re "Received disconnect.*" { send_user "DRAC ssh: $expect_out(0,string)"; exit}
-            -re "\\$|/.*>|\[$user\]#" { send "\r"; } 
+            -re "\\$|/.*>|.*$user.*#" { send "\r"; } 
             timeout { send_user "DRAC ssh: timeout" ; exit; }
             eof { if { $cont == 1 } { send_user "DRAC ssh failed twice"; exit ; } ; set cont 1 }
         }
@@ -47,15 +47,15 @@ if { "$method" == "ssh" } {
     if { "$dryrun" == "True" } {
         expect {
             -re "\\$|/.*>" { send "racadm getsysinfo\r"; } 
-            -re "\[$user\]#" { send "getsysinfo\r" }
+            -re ".*$user.*#" { send "getsysinfo\r" }
         }
     } else {
         expect {
             -re "\\$|/.*>" { send "racadm serveraction powercycle\r"; } 
-            -re "\[$user\]#" { send "serveraction powercycle\r" }
+            -re ".*$user.*#" { send "serveraction powercycle\r" }
         }
     }
-    expect -re "\\$|/.*>|\[$user\]#" { send "exit\r"; } 
+    expect -re "\\$|/.*>|.*$user.*#" { send "exit\r"; } 
 
     expect eof { send_user "$reset_msg\n" }
 

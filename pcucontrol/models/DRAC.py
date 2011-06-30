@@ -4,7 +4,7 @@ import time
 class DRAC(BasicPCUControl):
     supported_ports = [22,443,5869]
     def run_drac(self, node_port, dryrun):
-        return self.run_expect_script("DRAC.exp racadm", dryrun=dryrun, model="None")
+        return self.run_expect_script("DRAC.exp racadm", dryrun=dryrun, model="None", ip=True)
 
     def run_ssh(self, node_port, dryrun):
         return self.run_expect_script("DRAC.exp ssh", dryrun=dryrun, model="None")

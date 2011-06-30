@@ -359,9 +359,14 @@ class BasicPCUControl(PCUModel):
     def run_expect_script(self, scriptname, **args):
         locfg = command.CMD()
 
+        if 'ip' in args:
+            host = self.ip
+        else:
+            host = self.host
+
         cmd_str = get_python_lib(1) + "/pcucontrol/models/exp/"
         cmd = cmd_str + "%s %s %s '%s' %s %s "  % (
-                    scriptname, self.host, self.username, 
+                    scriptname, host, self.username, 
                     self.password, args['dryrun'], args['model'])
         print cmd
         cmd_out, cmd_err = locfg.run_noexcept(cmd)
