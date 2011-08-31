@@ -1,6 +1,6 @@
 %define name pcucontrol
 %define version 1.0
-%define taglevel 11
+%define taglevel 12
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Aug 31 2011 Stephen Soltesz <soltesz@cs.princeton.edu> - pcucontrol-1.0-12
+- Fixed DRAC regular expression for ssh, and added IP address for external
+- command.
+
 * Wed Jun 08 2011 s s <soltesz@cs.princeton.edu> - pcucontrol-1.0-11
 - Updated HPiLO, DRAC with expect scripts.
 - Updated other models to use subprocess module in favor of os.popen*
