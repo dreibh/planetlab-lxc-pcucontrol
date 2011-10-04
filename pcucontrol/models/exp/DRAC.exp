@@ -37,8 +37,8 @@ if { "$method" == "ssh" } {
             "Connection timed out" { send_user "DRAC ssh: $expect_out(0,string)"; exit }
             -re "Received disconnect.*" { send_user "DRAC ssh: $expect_out(0,string)"; exit}
             -re "\\$|/.*>|.*$user.*#" { send "\r"; } 
-            timeout { send_user "DRAC ssh: timeout" ; exit; }
-            eof { if { $cont == 1 } { send_user "DRAC ssh failed twice"; exit ; } ; set cont 1 }
+            timeout { send_user "DRAC ssh: timeout\n" ; exit; }
+            eof { if { $cont == 1 } { send_user "DRAC ssh failed twice\n"; exit ; } ; set cont 1 }
         }
         if { $cont == 0 } { break; }
 
@@ -84,18 +84,18 @@ if { "$method" == "ssh" } {
                 -re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
                 -re "UserName:|username:" { send "$user\r" ; exp_continue };
                 -re "Password:|password:" { send "$password\r" };
-                timeout { send_user "DRAC: timeout" ; exit }
-                eof { send_user "DRAC: early EOF"; exit ; }
+                timeout { send_user "DRAC: timeout\n" ; exit }
+                eof { send_user "DRAC: early EOF\n"; exit ; }
             }
 
             expect {
                 -re "Authentication failed.*" { send_user "DRAC: $expect_out(0,string)"; exit }
                 -re "This.*not support remote RACADM" { send_user "DRAC: $expect_out(0,string)" ; exit }
                 -re "ERROR: The syntax of the command specified is not correct." { set cont 1 }
-                -re "INVALID ARGUMENT" { send_user "DRAC: received 'INVALID ARGUMENT'"; exit }
+                -re "INVALID ARGUMENT" { send_user "DRAC: received 'INVALID ARGUMENT'\n"; exit }
                 -re "RAC Information:" { sleep .1; }
-                timeout { send_user "DRAC: timeout" ; exit }
-                eof { send_user "DRAC: early EOF"; exit ; }
+                timeout { send_user "DRAC: timeout\n" ; exit }
+                eof { send_user "DRAC: early EOF\n"; exit ; }
                 #-re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
             }
             if { $cont == 0 } { break; }
@@ -105,7 +105,7 @@ if { "$method" == "ssh" } {
         expect {
             -re "Power Status.*" { sleep .1; } 
             -re "RAC Firmware.*" { sleep .1; }
-            eof { send_user "DRAC: early EOF"; exit ; }
+            eof { send_user "DRAC: early EOF\n"; exit ; }
         } 
         expect eof { send_user "$reset_msg\n" }
     }
