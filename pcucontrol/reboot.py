@@ -357,6 +357,7 @@ class BasicPCUControl(PCUModel):
         PCUModel.__init__(self, plc_pcu_record)
 
     def run_expect_script(self, scriptname, **args):
+        print "Running EXPECT: %s" % scriptname
         locfg = command.CMD()
 
         if 'ip' in args:
@@ -364,12 +365,19 @@ class BasicPCUControl(PCUModel):
         else:
             host = self.host
 
+        print args
+        if 'sequence' in args:
+            seq = " ".join(args['sequence'])
+            seq = "'%s'" % seq
+        else:
+            seq = ""
+
         cmd_str = get_python_lib(1) + "/pcucontrol/models/exp/"
-        cmd = cmd_str + "%s %s %s '%s' %s %s "  % (
+        cmd = cmd_str + "%s %s %s '%s' %s %s %s"  % (
                     scriptname, host, self.username, 
-                    self.password, args['dryrun'], args['model'])
+                    self.password, args['dryrun'], args['model'], seq)
         print cmd
-        cmd_out, cmd_err = locfg.run_noexcept(cmd)
+        cmd_out, cmd_err = locfg.run_noexcept("expect " + cmd)
         return cmd_out.strip() + cmd_err.strip()
 
     def reboot(self, node_port, dryrun):
@@ -522,6 +530,21 @@ def reboot_test_new(nodename, values, verbose, dryrun):
         else:
             rb_ret =  "Not_Run"
         # TODO: how to handle the weird, georgetown pcus, the drac faults, and ilo faults
+    except ExceptionPort, err:
+        rb_ret = str(err)
+    except NameError, err:
+        rb_ret = str(err)
+
+    return rb_ret
+
+def reboot_simple(nodeid, values, verbose, dryrun):
+    rb_ret = ""
+    try:
+        # Find the index of the given nodeid; use the same index in the ports list
+        port = values['ports'][values['node_ids'].index(nodeid)]
+        object = eval('%s(values, verbose)' % values['model'])
+        rb_ret = object.reboot(port, dryrun)
+        # TODO: how to handle the weird, georgetown pcus, the drac faults, and ilo faults?
     except ExceptionPort, err:
         rb_ret = str(err)
     except NameError, err:
