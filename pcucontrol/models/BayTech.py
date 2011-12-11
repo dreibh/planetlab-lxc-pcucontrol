@@ -77,7 +77,7 @@ class BayTechCtrlCUnibe(PCUControl):
 	"""
 	supported_ports = [22]
 	def run_ssh(self, node_port, dryrun):
-		print "BayTechCtrlC %s" % self.host
+		#print "BayTechCtrlC %s" % self.host
 
 		ssh_options="-o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no"
 		s = pxssh.pxssh()
@@ -86,7 +86,7 @@ class BayTechCtrlCUnibe(PCUControl):
 		# Otherwise, the login succeeded.
 
 		# Send a ctrl-c to the remote process.
-		print "sending ctrl-c"
+		#print "sending ctrl-c"
 		s.send(chr(3))
 
 		# Control Outlets  (5 ,1).........5
@@ -95,7 +95,7 @@ class BayTechCtrlCUnibe(PCUControl):
 			index = s.expect(["Enter Request :"])
 
 			if index == 0:
-				print "3"
+				#print "3"
 				s.send("3\r\n")
 				time.sleep(5)
 				index = s.expect(["DS-RPC>", "Enter user name:"])
@@ -105,7 +105,7 @@ class BayTechCtrlCUnibe(PCUControl):
 					index = s.expect(["DS-RPC>"])
 
 				if index == 0:
-					print "Reboot %d" % node_port
+					#print "Reboot %d" % node_port
 					time.sleep(5)
 					s.send("Reboot %d\r\n" % node_port)
 
@@ -113,10 +113,10 @@ class BayTechCtrlCUnibe(PCUControl):
 					index = s.expect(["\(Y/N\)\?", "Port in use", "DS-RPC>"])
 					if index == 0:
 						if dryrun:
-							print "sending N"
+							#print "sending N"
 							s.send("N\r\n")
 						else:
-							print "sending Y"
+							#print "sending Y"
 							s.send("Y\r\n")
 					elif index == 1:
 						raise ExceptionPrompt("PCU Reported 'Port in use.'")
@@ -144,7 +144,7 @@ class BayTechCtrlC(PCUControl):
 	"""
 	supported_ports = [22]
 	def run_ssh(self, node_port, dryrun):
-		print "BayTechCtrlC %s" % self.host
+		#print "BayTechCtrlC %s" % self.host
 
 		ssh_options="-o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no"
 		s = pxssh.pxssh()
@@ -158,40 +158,40 @@ class BayTechCtrlC(PCUControl):
 		# Otherwise, the login succeeded.
 
 		# Send a ctrl-c to the remote process.
-		print "SENDING ctrl-c"
+		#print "SENDING ctrl-c"
 		s.send(chr(3))
 
 		# Control Outlets  (5 ,1).........5
 		try:
-			print "EXPECTING: ", "Enter Request :"
+			#print "EXPECTING: ", "Enter Request :"
 			index = s.expect(["Enter Request :"])
 
 			if index == 0:
-				print "SENDING: 5"
+				#print "SENDING: 5"
 				s.send("5\r\n")
-				print "EXPECTING: ", "DS-RPC>"
+				#print "EXPECTING: ", "DS-RPC>"
 				index = s.expect(["DS-RPC>", "Enter user name:", "Port in use."])
 				if index == 1:
-					print "sending username"
+					#print "sending username"
 					s.send(self.username + "\r\n")
 					index = s.expect(["DS-RPC>"])
 				elif index == 2:
 					raise ExceptionPrompt("PCU Reported 'Port in use.'")
 
 				if index == 0:
-					print "SENDING: Reboot %d" % node_port
+					#print "SENDING: Reboot %d" % node_port
 					s.send("Reboot %d\r\n" % node_port)
 
-					print "SLEEPING: 5"
+					#print "SLEEPING: 5"
 					time.sleep(5)
-					print "EXPECTING: ", "Y/N?"
+					#print "EXPECTING: ", "Y/N?"
 					index = s.expect(["\(Y/N\)\?", "Port in use", "DS-RPC>"])
 					if index == 0:
 						if dryrun:
-							print "sending N"
+							#print "sending N"
 							s.send("N\r\n")
 						else:
-							print "SENDING: Y"
+							#print "SENDING: Y"
 							s.send("Y\r\n")
 					elif index == 1:
 						raise ExceptionPrompt("PCU Reported 'Port in use.'")
@@ -201,11 +201,11 @@ class BayTechCtrlC(PCUControl):
 				# NOTE: for some reason, the script times out with the
 				# following line.  In manual tests, it works correctly, but
 				# with automated tests, evidently it fails.
-				print "SLEEPING: 5"
+				#print "SLEEPING: 5"
 				time.sleep(5)
 				#print "TOTAL--", s.allstr, "--EOT"
 				index = s.expect(["DS-RPC>"])
-				print "got prompt back"
+				#print "got prompt back"
 
 			s.close()
 
@@ -225,7 +225,7 @@ class BayTech5CtrlC(PCUControl):
 	"""
 	supported_ports = [22]
 	def run_ssh(self, node_port, dryrun):
-		print "BayTech5CtrlC %s" % self.host
+		#print "BayTech5CtrlC %s" % self.host
 
 		ssh_options="-o StrictHostKeyChecking=no -o PasswordAuthentication=yes -o PubkeyAuthentication=no"
 		s = pxssh.pxssh()
@@ -239,43 +239,43 @@ class BayTech5CtrlC(PCUControl):
 		# Otherwise, the login succeeded.
 		# Control Outlets  (5 ,1).........5
 		try:
-			print "EXPECTING: ", "Enter Request :"
+			#print "EXPECTING: ", "Enter Request :"
 			s.send("\r\n")
 			time.sleep(2)
 			index = s.expect(["Enter Request"])
 
 			if index == 0:
-				print "SENDING: 5"
+				#print "SENDING: 5"
 				s.send("5\r\n")
-				print "EXPECTING: ", "DS-RPC>"
+				#print "EXPECTING: ", "DS-RPC>"
 				time.sleep(3)
 				# Send a ctrl-c to the remote process.
-				#print "SENDING ctrl-c"
+				##print "SENDING ctrl-c"
 				#s.send(chr(3))
 
 				index = s.expect(["DS-RPC>", "Enter user name:", "Port in use."])
 				if index == 1:
-					print "sending username"
+					#print "sending username"
 					s.send(self.username + "\r\n")
 					index = s.expect(["DS-RPC>"])
 				elif index == 2:
 					raise ExceptionPrompt("PCU Reported 'Port in use.'")
 
 				if index == 0:
-					print "SENDING: Reboot %d" % node_port
+					#print "SENDING: Reboot %d" % node_port
 					#s.send("Reboot %d\r\n" % node_port)
 					s.send("Reboot %d\r" % node_port)
 
-					print "SLEEPING: 5"
+					#print "SLEEPING: 5"
 					time.sleep(5)
-					print "EXPECTING: ", "Y/N?"
+					#print "EXPECTING: ", "Y/N?"
 					index = s.expect(["\(Y/N\)\?", "Port in use", "DS-RPC>"])
 					if index == 0:
 						if dryrun:
-							print "sending N"
+							#print "sending N"
 							s.send("N\r\n")
 						else:
-							print "SENDING: Y"
+							#print "SENDING: Y"
 							s.send("Y\r\n")
 					elif index == 1:
 						raise ExceptionPrompt("PCU Reported 'Port in use.'")
@@ -285,11 +285,11 @@ class BayTech5CtrlC(PCUControl):
 				# NOTE: for some reason, the script times out with the
 				# following line.  In manual tests, it works correctly, but
 				# with automated tests, evidently it fails.
-				print "SLEEPING: 5"
+				#print "SLEEPING: 5"
 				time.sleep(5)
 				#print "TOTAL--", s.allstr, "--EOT"
 				index = s.expect(["DS-RPC>"])
-				print "got prompt back"
+				#print "got prompt back"
 
 			s.close()
 
@@ -319,7 +319,7 @@ class BayTech(PCUControl):
 		except ExceptionNotFound, msg:
 			# one machine is configured to ask for a username,
 			# even after login...
-			print "msg: %s" % msg
+			#print "msg: %s" % msg
 			self.transport.write(self.username + "\r\n")
 			time.sleep(5)
 			self.transport.ifThenSend("DS-RPC>", "Reboot %d" % node_port)

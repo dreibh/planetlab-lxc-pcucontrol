@@ -25,7 +25,7 @@ class BlackBoxPSMaverick(PCUControl):
 
 		p = os.popen(cmd)
 		result = p.read()
-		print "RESULT: ", result
+		#print "RESULT: ", result
 
 		if len(result.split()) > 3:
 			return 0

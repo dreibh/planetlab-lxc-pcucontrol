@@ -17,5 +17,5 @@ class IntelAMT(PCUControl):
 		else:
 			cmd_str += " -A http://%s:16992/RemoteControlService -user admin -pass '%s' " % (self.host, self.password )
 			
-		print cmd_str
+		#print cmd_str
 		return cmd.system(cmd_str, Transport.TELNET_TIMEOUT)

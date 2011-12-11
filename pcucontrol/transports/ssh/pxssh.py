@@ -51,7 +51,7 @@ class pxssh (spawn):
         more unique. If that still fails then we return False.
         """
         cmd = "ssh %s -l %s %s" % (ssh_options, username, server)
-        print cmd
+        #print cmd
         spawn.__init__(self, cmd, timeout=login_timeout)
         #, "(?i)no route to host"])
         i = self.expect(["(?i)are you sure you want to continue connecting", original_prompts, "(?i)password", "(?i)permission denied", "(?i)terminal type", TIMEOUT, "(?i)connection closed by remote host"])

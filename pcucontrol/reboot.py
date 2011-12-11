@@ -310,7 +310,7 @@ class PCUControl(PCUModel,PCURecord):
             if port_list == []:
                 raise ExceptionPort("No Open Port: No transport from open ports")
 
-        print port_list
+        #print port_list
 
         ret = "No implementation for open ports on selected PCU model"
         for port in port_list:
@@ -320,9 +320,9 @@ class PCUControl(PCUModel,PCURecord):
             type = Transport.porttypemap[port]
             self.transport = Transport(type, verbose)
 
-            print "checking for run_%s" % type
+            #print "checking for run_%s" % type
             if hasattr(self, "run_%s" % type):
-                print "found run_%s" % type
+                #print "found run_%s" % type
                 fxn = getattr(self, "run_%s" % type)
                 ret = self.catcherror(fxn, node_port, dryrun)
                 if ret == 0: # NOTE: success!, so stop
@@ -357,7 +357,7 @@ class BasicPCUControl(PCUModel):
         PCUModel.__init__(self, plc_pcu_record)
 
     def run_expect_script(self, scriptname, **args):
-        print "Running EXPECT: %s" % scriptname
+        #print "Running EXPECT: %s" % scriptname
         locfg = command.CMD()
 
         if 'ip' in args:
@@ -365,7 +365,7 @@ class BasicPCUControl(PCUModel):
         else:
             host = self.host
 
-        print args
+        #print args
         if 'sequence' in args:
             seq = " ".join(args['sequence'])
             seq = "'%s'" % seq
@@ -376,7 +376,7 @@ class BasicPCUControl(PCUModel):
         cmd = cmd_str + "%s %s %s '%s' %s %s %s"  % (
                     scriptname, host, self.username, 
                     self.password, args['dryrun'], args['model'], seq)
-        print cmd
+        #print cmd
         cmd_out, cmd_err = locfg.run_noexcept("expect " + cmd)
         return cmd_out.strip() + cmd_err.strip()
 
@@ -390,7 +390,7 @@ class BasicPCUControl(PCUModel):
         if not hasattr(self, looking_for_fxn):
             raise Exception("This model (%s) does not implement %s" % (self.model, looking_for_fxn))
 
-        print "found function %s in model %s" % (looking_for_fxn, self.model)
+        #print "found function %s in model %s" % (looking_for_fxn, self.model)
         reboot_fxn = getattr(self, looking_for_fxn)
         ret = self.catcherror(reboot_fxn, node_port, dryrun)
 

@@ -22,11 +22,11 @@ class ePowerSwitchNew(PCUControl):
 			# NOTE: this is expected to fail initially
 			pass
 		else:
-			print self.url
-			print "-----------"
-			print handle.read()
-			print "-----------"
-			return "ERROR: not protected by HTTP authentication"
+			#print self.url
+			#print "-----------"
+			r = handle.read()
+			#print "-----------"
+			return "ERROR: not protected by HTTP authentication: %s" % r
 
 		if not hasattr(e, 'code') or e.code != 401:
 			return "ERROR: failed for: %s" % str(e)
@@ -71,8 +71,8 @@ class ePowerSwitchOld(PCUControl):
                 authinfo = { "pwd" : self.password }
                 data = urllib.urlencode(authinfo)
                 req = urllib2.Request(self.url + "/elogin.html", data)
-                print self.url
-                print data
+                #print self.url
+                #print data
                 response = urllib2.urlopen(req)
                 reply = response.read()
 

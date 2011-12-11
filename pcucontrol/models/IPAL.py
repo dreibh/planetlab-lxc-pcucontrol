@@ -54,17 +54,17 @@ class IPAL(PCUControl):
 		self.transport.ifThenSend("Password >", self.password, ExceptionPassword)
 		self.transport.write("\r\n\r\n")
 		if not dryrun: # P# - Pulse relay
-			print "node_port %s" % node_port
+			#print "node_port %s" % node_port
 			self.transport.ifThenSend("Enter >", 
 							"P%s"%node_port, 
 							ExceptionNotFound)
-			print "send newlines"
+			#print "send newlines"
 			self.transport.write("\r\n\r\n")
-			print "after new lines"
+			#print "after new lines"
 		# Get the next prompt
-		print "wait for enter"
+		#print "wait for enter"
 		self.transport.ifElse("Enter >", ExceptionTimeout)
-		print "closing "
+		#print "closing "
 		self.transport.close()
 		return 0
 
@@ -73,10 +73,10 @@ class IPAL(PCUControl):
 
 		power_on = False
 
-		print "open socket"
+		#print "open socket"
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
-			print "connect"
+			#print "connect"
 			s.connect((self.host, 9100))
 		except socket.error, e:
 			s.close()
@@ -90,10 +90,10 @@ class IPAL(PCUControl):
 				raise Exception(e)
 				
 		# get current status
-		print "Checking status"
+		#print "Checking status"
 		s.send(self.format_msg("", 'O'))
 		ret = self.recv_noblock(s, 8)
-		print "Current status is '%s'" % ret
+		#print "Current status is '%s'" % ret
 
 		if ret == '':
 			raise Exception("Status returned 'another session already open' on %s %s : %s" % (self.host, node_port, ret))
@@ -116,17 +116,17 @@ class IPAL(PCUControl):
 
 		if not dryrun:
 			if power_on:
-				print "Pulsing %s" % node_port
+				#print "Pulsing %s" % node_port
 				s.send(self.format_msg("%s" % node_port, 'P'))
 			else:
 				# NOTE: turn power on ; do not pulse the port.
-				print "Power was off, so turning on ..."
+				#print "Power was off, so turning on ..."
 				s.send(self.format_msg("%s" % node_port, 'E'))
 				#s.send(self.format_msg("%s" % node_port, 'P'))
 
-			print "Receiving response."
+			#print "Receiving response."
 			ret = self.recv_noblock(s, 8)
-			print "Current status is '%s'" % ret
+			#print "Current status is '%s'" % ret
 
 			if node_port < len(ret):
 				status = ret[node_port]

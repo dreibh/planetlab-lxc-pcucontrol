@@ -6,12 +6,12 @@ class APCControl(BasicPCUControl):
 #    reboot_sequence = []
 
     def run(self, node_port, dryrun):
-        print "RUNNING!!!!!!!!!!!!"
+        #print "RUNNING!!!!!!!!!!!!"
         if self.transport.type == Transport.HTTPS or self.type == Transport.HTTP:
-            print "APC via http...."
+            #print "APC via http...."
             return self.run_http_or_https(node_port, dryrun)
         else:
-            print "APC via telnet/ssh...."
+            #print "APC via telnet/ssh...."
             return self.run_telnet_or_ssh(node_port, dryrun)
 
     def pcu_run(self, node_port, dryrun=False):
@@ -59,7 +59,7 @@ class APCControl(BasicPCUControl):
                 raise ExceptionNoTransport("Unsupported transport for http command")
 
         cmd = cmd % ( self.username, self.password, self.host)
-        print "CMD: %s" % cmd
+        #print "CMD: %s" % cmd
 
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
 
@@ -69,12 +69,12 @@ class APCControl(BasicPCUControl):
             return 0
         else:
             # NOTE: an error has occurred, so no need to log out.
-            print "RESULT: ", result
+            #print "RESULT: ", result
             return result
 
     def get_https_cmd(self):
         version = self.get_version()
-        print "VERSION: %s" % version
+        #print "VERSION: %s" % version
         if "AP96" in version:
             cmd = "curl -s --insecure --user '%s:%s' https://%s/outlets.htm " + \
                   " | grep -E '^[^<]+' " + \
@@ -89,14 +89,14 @@ class APCControl(BasicPCUControl):
     
     def get_http_cmd(self):
         version = self.get_version()
-        print "VERSION: %s" % version
+        #print "VERSION: %s" % version
         if "AP7900" in version:
             cmd = "curl -s --anyauth --user '%s:%s' http://%s/rPDUout.htm | grep -E '^[^<]+'" 
         elif "AP7920" in version:
             cmd = "curl -s --anyauth --user '%s:%s' http://%s/ms3out.htm | grep -E '^[^<]+' " 
         else:
             # default case...
-            print "USING DEFAULT"
+            #print "USING DEFAULT"
             cmd = "curl -s --anyauth --user '%s:%s' http://%s/ms3out.htm | grep -E '^[^<]+' " 
             
         return cmd
@@ -143,7 +143,7 @@ class APCControl(BasicPCUControl):
 
         cmd = cmd % ( self.username, self.password, self.host)
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout
-        print p.read()
+        #print p.read()
 
 class APCControl12p3(APCControl):
     def run_telnet_or_ssh(self, node_port, dryrun):
@@ -157,7 +157,7 @@ class APCControl1p4(APCControl):
 
 class APCControl121p3(APCControl):
     def run_telnet_or_ssh(self, node_port, dryrun):
-        print "TEST! "
+        #print "TEST! "
         self.reboot_sequence = ["1", "2", "1", str(node_port), "3"]
         return super(APCControl121p3, self).run_telnet_or_ssh(node_port, dryrun)
 
