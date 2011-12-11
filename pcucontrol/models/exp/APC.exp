@@ -1,0 +1,61 @@
+#!/usr/bin/expect
+
+set timeout 60
+set method [lindex $argv 0]
+set host [lindex $argv 1]
+set user [lindex $argv 2]
+set password [lindex $argv 3]
+set dryrun [lindex $argv 4]
+set model [lindex $argv 5]
+set sequence [lindex $argv 6]
+
+log_user 0
+if { "$dryrun" == "True" } {
+    set reset_msg "Test: No error"
+} else {
+    set reset_msg "Reset: No error"
+}
+
+set cmd_list { {"ssh $user@$host"} {"telnet $host"} }
+
+if { "$method" == "ssh" || "$method" == "telnet" } {
+
+    set env(TERM) "vt100"
+    if { "$method" == "telnet" } {
+        spawn telnet $host
+    } else { 
+        spawn ssh $user@$host
+    }
+
+    expect {
+        "password:" { send "$password\n" ; exp_continue }
+        -re "User Name.*" { send "$user\r"; exp_continue}
+        -re "Password.*" { send "$password\r"; exp_continue}
+        -re "Access to the Control Console will be denied" { 
+                    send_user "Error $method: $expect_out(0,string)\n"; exit } 
+        "Are you sure you want to continue connecting (yes/no)? " { send "yes\n" ; exp_continue }
+        "Permission denied" { send_user "Error $method: username/password: $expect_out(0,string)"; exit }
+        "Could not resolve hostname" { send_user "Error $method: $expect_out(0,string)"; exit }
+        "Connection refused" { send_user "Error $method: Could not connect\n"; exit }
+        "Connection timed out" { send_user "Error $method: Connection timed out\n"; exit }
+        "No route to host" { send_user "Error $method: $expect_out(0,string)"; exit }
+        "> " { send "\r\n"; } 
+        timeout { send_user "Error $method: Timeout\n"; exit; }
+    }
+}
+
+
+set steps [split $sequence " "]
+foreach step $steps {
+    #send_user "Sending step $step\n";
+    expect "> " { send "$step\r\n"; }
+}
+
+if { "$dryrun" == "True" } {
+    expect "Enter 'YES' to continue or <ENTER> to cancel" { send "\r\n\r\n"; } 
+} else {
+    expect "Enter 'YES' to continue or <ENTER> to cancel" { send "YES\r\n"; } 
+}
+expect "> " { send "4\r\n"; } 
+
+expect eof { send_user "$reset_msg\n" }

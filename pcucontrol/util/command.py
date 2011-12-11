@@ -36,8 +36,8 @@ def read_t(stream, count=1, timeout=COMMAND_TIMEOUT*2):
 		while True:
 			lin, lout, lerr = select([stream], [], [], timeout)
 			if len(lin) == 0:
-				print "timeout!"
-				raise ExceptionReadTimeout("TIMEOUT reading from command")
+				#print "timeout!"
+				raise ExceptionReadTimeout("TIMEOUT while reading from command")
 
 			try:
 				outbytes = stream.read(count)
@@ -55,7 +55,7 @@ def read_t(stream, count=1, timeout=COMMAND_TIMEOUT*2):
 	else:
 		lin, lout, lerr = select([stream], [], [], timeout)
 		if len(lin) == 0:
-			raise ExceptionReadTimeout("TIMEOUT reading from command")
+			raise ExceptionReadTimeout("TIMEOUT while reading from command")
 
 		return stream.read(count)
 
@@ -68,10 +68,10 @@ class CMD:
 		try:
 			return CMD.run(self,cmd,timeout)
 		except ExceptionTimeout:
-			print traceback.print_exc()
+			#print traceback.print_exc()
 			return ("", "ScriptTimeout")
 		except ExceptionReadTimeout:
-			print traceback.print_exc()
+			#print traceback.print_exc()
 			return ("", "RunningScriptTimeout")
 		except KeyboardInterrupt:
 			print "Interrupted, exiting..."
@@ -101,7 +101,7 @@ class CMD:
 		lout, lin, lerr = select([f_out], [], [f_err], timeout)
 		if len(lin) == 0 and len(lout) == 0 and len(lerr) == 0:
 			# Reached a timeout!  Nuke process so it does not hang.
-			print "TIMEOUT!!!!!!!!!!!!!!!!!!!"
+			#print "TIMEOUT!!!!!!!!!!!!!!!!!!!"
 			s.kill(signal.SIGKILL)
 			raise ExceptionTimeout("TIMEOUT Running: %s" % cmd)
 		else:

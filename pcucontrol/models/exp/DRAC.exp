@@ -62,9 +62,11 @@ if { "$method" == "ssh" } {
 } else { 
     if { [string match "*racadm*" $method] } {
         if { "$dryrun" == "True" } {
-            set rac_cmd "getsysinfo"
+            set rac_cmd_a "getsysinfo"
+            set rac_cmd_b ""
         } else {
-            set rac_cmd "serveraction powercycle"
+            set rac_cmd_a "serveraction"
+            set rac_cmd_b "powercycle"
         }
         #send_user "/opt/dell/srvadmin/bin/$method -r $host -u $user -p '$password' $rac_cmd\n";
         set cont 0
@@ -74,10 +76,20 @@ if { "$method" == "ssh" } {
             #       on the cmdline causes racadm to fail.
             # NOTE: For unknown reason, some DRAC modules work only with
             #       stderr redirected to stdout, others only work without it.
+            # NOTE: For unknown reason, the racadm cmd does not recognize "serveraction powercycle" 
+            #       but does recognize "serveraction" "powercycle"
             if { $retry == 0 } {
-                set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd 2>&1 ]
+               if { "$rac_cmd_a" == "getsysinfo" } {
+                   set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd_a ]
+               } else {
+                   set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd_a $rac_cmd_b  ]
+               }
             } else {
-                set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd  ]
+               if { "$rac_cmd_a" == "getsysinfo" } {
+                   set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd_a 2>&1 ]
+               } else {
+                   set x [ spawn /opt/dell/srvadmin/rac5/bin/$method -i -r $host $rac_cmd_a $rac_cmd_b 2>&1 ]
+               }
             }
 
             expect {
@@ -92,10 +104,11 @@ if { "$method" == "ssh" } {
                 -re "Authentication failed.*" { send_user "DRAC: $expect_out(0,string)"; exit }
                 -re "This.*not support remote RACADM" { send_user "DRAC: $expect_out(0,string)" ; exit }
                 -re "ERROR: The syntax of the command specified is not correct." { set cont 1 }
+                -re "ERROR: the command that was entered is not valid" { set cont 1 }
                 -re "INVALID ARGUMENT" { send_user "DRAC: received 'INVALID ARGUMENT'\n"; exit }
                 -re "RAC Information:" { sleep .1; }
                 timeout { send_user "DRAC: timeout\n" ; exit }
-                eof { send_user "DRAC: early EOF\n"; exit ; }
+                eof { send_user "$reset_msg\n"; exit ; }
                 #-re "ERROR:.*" { send_user "DRAC: $expect_out(0,string)"; exit }
             }
             if { $cont == 0 } { break; }
