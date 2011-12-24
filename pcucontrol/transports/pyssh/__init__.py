@@ -15,7 +15,7 @@ version 0.1 of pyssh (http://pyssh.sourceforge.net) by Chuck Esterbrook.
 Licenced under a Python 2.2 style license.  See License.txt.
 """
 
-DEBUG_LEVEL = 1
+DEBUG_LEVEL = 0
 
 import os, getpass
 import signal    # should cause all KeyboardInterrupts to go to the main thread
@@ -162,8 +162,8 @@ class Ssh:
         sshargs += self.host
         if cmd:
             sshargs += ' ' + cmd
-        if self.debuglevel:
-            print ">> Running %s %s." % (self.sshpath, sshargs)
+        #if self.debuglevel:
+        #    print ">> Running %s %s." % (self.sshpath, sshargs)
         # temporary workaround until I get pid's working under win32
         #print sshargs
         if os.name == 'posix':

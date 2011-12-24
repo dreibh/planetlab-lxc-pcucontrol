@@ -33,7 +33,7 @@ import pcucontrol.transports.pyssh as pyssh
 #MONITOR_USER_ID = 11142
 
 import logging
-verbose = 1
+verbose = 0
 #dryrun = 0;
 
 class ExceptionNoTransport(Exception): pass
@@ -255,7 +255,7 @@ class Transport:
         if self.transport != None:
             output = self.transport.read_until(expected, self.TELNET_TIMEOUT)
             if output.find(expected) == -1:
-                print "OUTPUT: --%s--" % output
+                #print "OUTPUT: --%s--" % output
                 raise ErrorClass, "'%s' not found: Got: %s" % (expected, output)
             else:
                 self.transport.write(buffer + "\r\n")

@@ -46,7 +46,7 @@ class nbpipe:
                 item = os.read(self.fd, self.blocksize)
             except (IOError, OSError):
                 finish = 1
-            if (item == '') or finish:
+            if finish or (item == ''):
                 # Wait until everything has been read from the queue before
                 # setting eof = 1 and exiting.
                 while not self._q.empty():
