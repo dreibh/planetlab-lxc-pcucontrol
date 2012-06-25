@@ -1,6 +1,6 @@
 %define name pcucontrol
 %define version 1.0
-%define taglevel 12
+%define taglevel 13
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -56,6 +56,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 25 2012 Stephen Soltesz <soltesz@cs.princeton.edu> - pcucontrol-1.0-13
+- remove many unnecessary debugging print statement.
+- move APC & DRAC to expect scripts.  Much greater control.
+
 * Wed Aug 31 2011 Stephen Soltesz <soltesz@cs.princeton.edu> - pcucontrol-1.0-12
 - Fixed DRAC regular expression for ssh, and added IP address for external
 - command.
