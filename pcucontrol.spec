@@ -33,13 +33,25 @@ supported models.
 %prep
 %setup -q
 
+#################### Important note
+# starting with fedora27, fedora comes with openssl-11.0g
+# and in this version 
+# X509_EXTENSION {aka struct X509_extension_st}
+# has become opaque
+# this is mentioned here
+# https://github.com/openssl/openssl/issues/2239
+# see https://wiki.openssl.org/index.php/OpenSSL_1.1.0_Changes#Compatibility_Layer
+# 
+# so we turn off support for SSL starting with fedora27
+# this is in pcucontrol/models/intelamt/Makefile - see FCDISTRO
+
 %build
 # NOTE: the build uses g++ cmdamt/
 # NOTE: TMPDIR is needed here b/c the tmpfs of the build vserver is too small.
 cd pcucontrol/models/intelamt
 export TMPDIR=$PWD/tmp
 mkdir -p $TMPDIR
-make
+make FCDISTRO=%{fcdistro}
 cd ..
 
 %install

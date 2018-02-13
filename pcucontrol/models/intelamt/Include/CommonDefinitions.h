@@ -245,12 +245,16 @@ public:
   soap_imode(m_soap, SOAP_IO_KEEPALIVE);
 	if ( !strncmp(m_ip, "https:", 6) )
 	{
+#ifdef WITH_OPENSSL
 		soap_ssl_client_context(m_soap,
 								SOAP_SSL_DEFAULT,
 								certName,
 								certPass,
 								"/usr/share/ssl/cert.pem",
 								"/usr/share/ssl/certs/", NULL);
+#else
+                printf("WARNING, pcucontrol has no support for ssl starting with openssl-1.1\n");
+#endif
 	}
 #endif
   }

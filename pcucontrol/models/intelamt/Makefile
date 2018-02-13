@@ -1,9 +1,20 @@
 CC = g++
 LIBTOOL = libtool
 ARCH := $(shell uname -m | sed 's/i.86/i386/')
-X64FLAGS = -Wlong-long -Wformat -Wpointer-arith
-CFLAGS = -Dlinux  -Wall -Wno-deprecated
+
+# for f27: removing -Wlong-long
+X64FLAGS = -Wformat -Wpointer-arith 
+
+# for f27: getting rid of most warnings
+CFLAGS = -Dlinux -Wno-write-strings
+
+# for f27 : remove support for SSL - hopefully temporary
+# the changes to openssl 1.1 look a bit awkward though
+ifneq "$(FCDISTRO)" "$(filter $(FCDISTRO),f27)"
+SSL = 
+else
 SSL = -DWITH_OPENSSL
+endif
 
 ifeq ($(ARCH),x86_64)
 	FLAGS = $(CFLAGS) $(X64FLAGS) $(SSL)
@@ -11,7 +22,7 @@ else
 	FLAGS = $(CFLAGS) $(SSL)
 endif
 
-CFLAGS = -Dlinux  -Wall -Wno-deprecated $(SSL)
+#CFLAGS = -Dlinux  -Wall -Wno-deprecated $(SSL)
 GSOAP_PATH = ./
 GSOAP_CODE = ./
 INC_PATH = ./Include
@@ -37,7 +48,3 @@ Utils.o: $(SRC_PATH)/Utils.cpp
 clean:
 	rm -f $(OBJS) $(APPNAME) *~
 	rm -rf .libs
-	#dos2unix *.h
-	#dos2unix *.cpp
-	#dos2unix README
-	#dos2unix Makefile
