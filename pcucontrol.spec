@@ -1,6 +1,6 @@
 %define name pcucontrol
 %define version 1.0
-%define taglevel 13
+%define taglevel 14
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
 %global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
@@ -68,6 +68,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 07 2019 Thierry <Parmentelat> - pcucontrol-1.0-14
+- for building on fedora27; had to drop support for openssl, see specfile for details
+
 * Mon Jun 25 2012 Stephen Soltesz <soltesz@cs.princeton.edu> - pcucontrol-1.0-13
 - remove many unnecessary debugging print statement.
 - move APC & DRAC to expect scripts.  Much greater control.
