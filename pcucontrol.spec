@@ -3,7 +3,11 @@
 %define taglevel 14
 
 %define release %{taglevel}%{?pldistro:.%{pldistro}}%{?date:.%{date}}
-%global python_sitearch	%( python -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
+%global python_sitearch	%( python2 -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)" )
+
+# Turn off the brp-python-bytecompile automagic
+# this is required for fedora31 that has moved to python3 as a default
+%global _python_bytecompile_extra 0
 
 Name: %{name}
 Version: %{version}
@@ -20,7 +24,7 @@ URL: %{SCMURL}
 
 Requires: python
 Requires: OpenIPMI-tools
-Obsoletes: monitor-pcucontrol
+#Obsoletes: monitor-pcucontrol
 
 Summary: pcu controls for monitor and plcapi
 Group: Applications/System
